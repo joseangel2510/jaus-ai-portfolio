@@ -29,7 +29,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-y-0 right-4 hidden w-px bg-gradient-to-b from-transparent via-line to-transparent md:block"
       />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 md:grid-cols-12 md:gap-10 md:px-10 md:pb-32 lg:gap-14">
+      <div className="relative mx-auto grid max-w-7xl items-start gap-14 px-6 pb-24 md:grid-cols-12 md:gap-10 md:px-10 md:pb-32 lg:gap-14">
         {/* LEFT — copy */}
         <div className="md:col-span-7">
           {/* Eyebrow */}
