@@ -15,7 +15,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SCREENSHOTS_DIR = path.resolve(
   __dirname,
   "..",
-  "..",
   "temporary screenshots",
 );
 fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
