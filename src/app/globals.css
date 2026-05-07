@@ -10,11 +10,11 @@
   --color-line: #1a1f28;
   --color-line-strong: #232a35;
 
-  /* Ink (text) */
+  /* Ink (text) — bumped for better contrast against semi-transparent cards */
   --color-ink: #f5f7fa;
-  --color-ink-2: #a8b2c1;
-  --color-ink-3: #6b7689;
-  --color-ink-4: #4a5263;
+  --color-ink-2: #d2dae6;
+  --color-ink-3: #98a4b8;
+  --color-ink-4: #6a7689;
 
   /* Accent */
   --color-accent: #00e5c3;
