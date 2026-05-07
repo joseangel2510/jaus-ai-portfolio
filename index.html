@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>José Ángel Ulibarri - AI Automation Specialist</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            tiffany: { 50:'#e6f7f5', 100:'#b3e9e4', 200:'#81D8D0', 300:'#5ec9bf', 400:'#3bbdaf', 500:'#2a9e93', 600:'#1f7a72', 700:'#155651', 800:'#0d3d38', 900:'#071f1c' },
+          },
+          fontFamily: {
+            display: ['"Instrument Serif"', 'Georgia', 'serif'],
+            body: ['"JetBrains Mono"', '"Fira Code"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+
+  <style>
+    body { font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace; background: #000; }
+    ::-webkit-scrollbar { width: 0; background: transparent; }
+
+    /* Noise grain overlay */
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Scroll progress bar */
+    #scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, #81D8D0, #3bbdaf); z-index: 100; width: 0%; }
+
+    /* Glass */
+    .ios-glass {
+      background: rgba(30,30,30,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    }
+    .tiffany-glow { box-shadow: 0 0 60px -20px rgba(129,216,208,0.15); }
+
+    /* Animated gradient border */
+    @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    @keyframes rotateBorder { to { --angle: 360deg; } }
+    .gradient-border { position: relative; }
+    .gradient-border::before {
+      content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1px;
+      background: conic-gradient(from var(--angle), transparent 40%, #81D8D0 50%, transparent 60%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0;
+      transition: opacity 0.5s ease; animation: rotateBorder 4s linear infinite;
+    }
+    .gradient-border:hover::before { opacity: 1; }
+
+    /* Profile ghost */
+    .profile-fade {
+      -webkit-mask-image: radial-gradient(ellipse 70% 60% at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+      mask-image: radial-gradient(ellipse 70% 60% at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+    }
+    @keyframes ghostPulse { 0%,100% { opacity: 0.15; } 50% { opacity: 0.35; } }
+    .animate-ghost { animation: ghostPulse 5s ease-in-out infinite; }
+
+    /* Floating shapes */
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(3deg); } }
+    @keyframes floatSlow { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
+
+    /* === AURORA BACKGROUND SYSTEM === */
+    #aurora-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    /* Dot matrix */
+    #aurora-bg .dot-matrix {
+      position: absolute; inset: 0; opacity: 0.025;
+      background-image: radial-gradient(circle, #81D8D0 0.8px, transparent 0.8px);
+      background-size: 40px 40px;
+    }
+    /* Aurora ribbons */
+    .aurora-ribbon {
+      position: absolute; width: 200%; height: 300px; filter: blur(80px); opacity: 0;
+      border-radius: 50%; mix-blend-mode: screen;
+    }
+    .aurora-r1 {
+      background: linear-gradient(90deg, transparent 0%, #81D8D020 15%, #81D8D035 30%, #3bbdaf25 50%, #1e3a5f20 70%, transparent 100%);
+      top: 5%; left: -50%; animation: auroraFlow1 18s ease-in-out infinite;
+    }
+    .aurora-r2 {
+      background: linear-gradient(90deg, transparent 0%, #4a1a6b18 20%, #81D8D025 40%, #2a9e9320 60%, transparent 100%);
+      top: 25%; left: -30%; animation: auroraFlow2 22s ease-in-out infinite 3s;
+    }
+    .aurora-r3 {
+      background: linear-gradient(90deg, transparent 0%, #1e3a5f15 25%, #81D8D020 45%, #4a1a6b15 65%, transparent 100%);
+      top: 55%; left: -40%; animation: auroraFlow3 25s ease-in-out infinite 6s;
+    }
+    .aurora-r4 {
+      background: linear-gradient(90deg, transparent 0%, #81D8D012 30%, #3bbdaf18 50%, transparent 100%);
+      top: 75%; left: -20%; animation: auroraFlow1 20s ease-in-out infinite 9s;
+    }
+    @keyframes auroraFlow1 {
+      0% { transform: translateX(-10%) rotate(-3deg) scaleY(1); opacity: 0; }
+      15% { opacity: 0.6; }
+      50% { transform: translateX(15%) rotate(2deg) scaleY(1.3); opacity: 0.8; }
+      85% { opacity: 0.5; }
+      100% { transform: translateX(-10%) rotate(-3deg) scaleY(1); opacity: 0; }
+    }
+    @keyframes auroraFlow2 {
+      0% { transform: translateX(5%) rotate(2deg) scaleY(0.8); opacity: 0; }
+      20% { opacity: 0.5; }
+      50% { transform: translateX(-15%) rotate(-4deg) scaleY(1.4); opacity: 0.7; }
+      80% { opacity: 0.4; }
+      100% { transform: translateX(5%) rotate(2deg) scaleY(0.8); opacity: 0; }
+    }
+    @keyframes auroraFlow3 {
+      0% { transform: translateX(-5%) rotate(1deg) scaleY(1.1); opacity: 0; }
+      25% { opacity: 0.4; }
+      50% { transform: translateX(10%) rotate(-2deg) scaleY(0.9); opacity: 0.6; }
+      75% { opacity: 0.3; }
+      100% { transform: translateX(-5%) rotate(1deg) scaleY(1.1); opacity: 0; }
+    }
+    /* Vignette overlay for depth */
+    #aurora-bg .vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 0%, rgba(0,0,0,0.4) 100%);
+    }
+    /* Horizon glow line */
+    .horizon-glow {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 5%, rgba(129,216,208,0.08) 30%, rgba(129,216,208,0.15) 50%, rgba(129,216,208,0.08) 70%, transparent 95%);
+      box-shadow: 0 0 60px 20px rgba(129,216,208,0.03);
+    }
+    /* Geometric constellation lines */
+    .constellation {
+      position: absolute; opacity: 0.03;
+    }
+    .constellation line { stroke: #81D8D0; stroke-width: 0.5; }
+    .constellation circle { fill: #81D8D0; }
+
+    /* Text reveal */
+    .line-reveal { overflow: hidden; }
+    .line-reveal span { display: block; }
+
+    /* 3D tilt */
+    .tilt-card { transform-style: preserve-3d; transition: transform 0.15s ease-out; }
+
+    /* === SERVICE CARD SPOTLIGHT === */
+    .service-card { position: relative; overflow: hidden; }
+    .service-card .spotlight {
+      position: absolute; width: 300px; height: 300px; border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, rgba(129,216,208,0.08) 0%, transparent 70%);
+      transform: translate(-50%, -50%); opacity: 0; transition: opacity 0.4s ease; z-index: 0;
+    }
+    .service-card:hover .spotlight { opacity: 1; }
+    .service-card > *:not(.spotlight) { position: relative; z-index: 1; }
+
+    /* Icon glow ring on hover */
+    .icon-glow { position: relative; }
+    .icon-glow::after {
+      content: ''; position: absolute; inset: -6px; border-radius: inherit; border: 1px solid transparent;
+      transition: border-color 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+      opacity: 0; transform: scale(0.8);
+    }
+    .group:hover .icon-glow::after {
+      border-color: rgba(129,216,208,0.25); opacity: 1; transform: scale(1.15);
+    }
+
+    /* Typing dots animation */
+    .typing-dots { display: inline-flex; gap: 3px; align-items: center; }
+    .typing-dots span {
+      width: 5px; height: 5px; border-radius: 50%; background: rgba(129,216,208,0.5);
+      animation: typingBounce 1.4s ease-in-out infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+
+    /* Checklist item stagger */
+    .check-item { opacity: 0; transform: translateX(-10px); }
+    .check-item.visible { animation: checkSlide 0.4s ease forwards; }
+    @keyframes checkSlide { to { opacity: 1; transform: translateX(0); } }
+
+    /* Counter glow */
+    .counter-glow { text-shadow: 0 0 20px rgba(129,216,208,0.3); }
+
+    /* Featured card shimmer */
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    .shimmer-line {
+      position: absolute; top: 0; width: 50%; height: 100%; pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(129,216,208,0.04), transparent);
+      animation: shimmer 4s ease-in-out infinite;
+    }
+
+    /* Fade animation initial */
+    .animate-fade-in { animation: fadeUp 1.2s cubic-bezier(0.16,1,0.3,1) forwards; }
+    @keyframes fadeUp { 0% { opacity: 0; transform: translateY(20px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    .animate-delay-100 { animation-delay: 0.1s; }
+    .animate-delay-200 { animation-delay: 0.2s; }
+    .animate-delay-300 { animation-delay: 0.3s; }
+
+    /* About image rotating border */
+    .rotating-border { position: relative; }
+    .rotating-border::before {
+      content: ''; position: absolute; inset: -3px; border-radius: 32px; z-index: -1;
+      background: conic-gradient(from var(--angle), #81D8D0, transparent 30%, transparent 70%, #81D8D0);
+      animation: rotateBorder 8s linear infinite; opacity: 0.6;
+    }
+
+    /* Case card image / gradient bg */
+    .case-img { transition: transform 0.8s cubic-bezier(0.22,1,0.36,1), filter 0.8s ease; filter: saturate(0.8) contrast(1.05); }
+    .group:hover .case-img { transform: scale(1.06); filter: saturate(1) contrast(1); }
+
+    /* Case gradient backgrounds */
+    .case-gradient-1 {
+      background: linear-gradient(135deg, #0a1a1a 0%, #0d2e2b 25%, #134e4a 50%, #0a1a1a 75%, #081818 100%);
+      background-size: 200% 200%; animation: caseShift 12s ease infinite;
+    }
+    .case-gradient-1::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 70% 60%, rgba(129,216,208,0.15) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 40% at 20% 30%, rgba(129,216,208,0.08) 0%, transparent 60%);
+    }
+    .case-gradient-2 {
+      background: linear-gradient(135deg, #0f0a1a 0%, #1a0d2e 25%, #2d1b4e 50%, #0f0a1a 75%, #0a0818 100%);
+      background-size: 200% 200%; animation: caseShift 14s ease infinite 2s;
+    }
+    .case-gradient-2::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 50% at 60% 50%, rgba(147,130,220,0.12) 0%, transparent 70%),
+                  radial-gradient(ellipse 30% 40% at 30% 70%, rgba(129,216,208,0.06) 0%, transparent 60%);
+    }
+    .case-gradient-3 {
+      background: linear-gradient(135deg, #0a0f1a 0%, #0d1a2e 25%, #1b2d4e 50%, #0a0f1a 75%, #080a18 100%);
+      background-size: 200% 200%; animation: caseShift 13s ease infinite 1s;
+    }
+    .case-gradient-3::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 50% 40%, rgba(59,130,246,0.1) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 30% at 80% 70%, rgba(129,216,208,0.08) 0%, transparent 60%);
+    }
+    .case-gradient-4 {
+      background: linear-gradient(135deg, #1a0f0a 0%, #2e1a0d 25%, #4e2d1b 50%, #1a0f0a 75%, #180a08 100%);
+      background-size: 200% 200%; animation: caseShift 15s ease infinite 3s;
+    }
+    .case-gradient-4::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 40% 50%, rgba(251,146,60,0.1) 0%, transparent 70%),
+                  radial-gradient(ellipse 30% 40% at 70% 30%, rgba(129,216,208,0.06) 0%, transparent 60%);
+    }
+    .case-gradient-5 {
+      background: linear-gradient(135deg, #0a1a15 0%, #0d2e22 25%, #134e3a 50%, #0a1a15 75%, #081815 100%);
+      background-size: 200% 200%; animation: caseShift 16s ease infinite 4s;
+    }
+    .case-gradient-5::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(129,216,208,0.1) 0%, transparent 70%);
+    }
+    @keyframes caseShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+    /* Demo button */
+    .demo-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 1.25rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+      border: 1px solid rgba(129,216,208,0.3); color: #81D8D0; background: rgba(129,216,208,0.05);
+      transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+    }
+    .demo-btn:hover { background: rgba(129,216,208,0.15); border-color: rgba(129,216,208,0.6); transform: translateY(-1px); }
+    .demo-btn:active { transform: scale(0.97); }
+
+    /* Decorative grid lines for cases */
+    .case-grid-lines::after {
+      content: ''; position: absolute; inset: 0; opacity: 0.04; pointer-events: none;
+      background-image: linear-gradient(rgba(129,216,208,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(129,216,208,0.3) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Counter animation target */
+    .counter { font-variant-numeric: tabular-nums; }
+
+    /* Floating label */
+    .float-label { position: relative; }
+    .float-label input, .float-label textarea { padding-top: 1.5rem; }
+    .float-label label {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); font-size: 0.875rem;
+      color: rgba(255,255,255,0.3); transition: all 0.3s cubic-bezier(0.16,1,0.3,1); pointer-events: none;
+    }
+    .float-label textarea ~ label { top: 1.5rem; transform: none; }
+    .float-label input:focus ~ label, .float-label input:not(:placeholder-shown) ~ label,
+    .float-label textarea:focus ~ label, .float-label textarea:not(:placeholder-shown) ~ label {
+      top: 0.5rem; transform: none; font-size: 0.65rem; color: #81D8D0;
+    }
+
+    /* Ripple */
+    .ripple-container { position: relative; overflow: hidden; }
+    .ripple-container .ripple {
+      position: absolute; border-radius: 50%; background: rgba(0,0,0,0.3);
+      transform: scale(0); animation: rippleAnim 0.6s ease-out forwards; pointer-events: none;
+    }
+    @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+    /* Gradient line separator */
+    .gradient-line { height: 1px; background: linear-gradient(90deg, transparent, #81D8D0, transparent); transform: scaleX(0); }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen w-full flex flex-col items-center relative selection:bg-tiffany-200 selection:text-black overflow-x-hidden">
+
+  <!-- Scroll Progress -->
+  <div id="scroll-progress"></div>
+
+  <!-- === AURORA BACKGROUND SYSTEM === -->
+  <div id="aurora-bg">
+    <!-- Dot matrix layer -->
+    <div class="dot-matrix"></div>
+
+    <!-- Aurora ribbon layers -->
+    <div class="aurora-ribbon aurora-r1"></div>
+    <div class="aurora-ribbon aurora-r2"></div>
+    <div class="aurora-ribbon aurora-r3"></div>
+    <div class="aurora-ribbon aurora-r4"></div>
+
+    <!-- Animated mesh blobs (enhanced) -->
+    <div id="bg-mesh" class="absolute inset-0">
+      <div class="absolute w-[800px] h-[800px] rounded-full mix-blend-screen filter blur-[150px] opacity-[0.06]" style="background: radial-gradient(circle, #81D8D0 0%, transparent 70%); top: -20%; left: -15%;"></div>
+      <div class="absolute w-[600px] h-[600px] rounded-full mix-blend-screen filter blur-[130px] opacity-[0.05]" style="background: radial-gradient(circle, #1e3a5f 0%, transparent 70%); bottom: -15%; right: -10%;"></div>
+      <div class="absolute w-[500px] h-[500px] rounded-full mix-blend-screen filter blur-[110px] opacity-[0.04]" style="background: radial-gradient(circle, #4a1a6b 0%, transparent 70%); top: 35%; left: 45%;"></div>
+      <div class="absolute w-[400px] h-[400px] rounded-full mix-blend-screen filter blur-[100px] opacity-[0.035]" style="background: radial-gradient(circle, #81D8D0 0%, transparent 70%); top: 65%; right: 15%;"></div>
+      <div class="absolute w-[350px] h-[350px] rounded-full mix-blend-screen filter blur-[90px] opacity-[0.03]" style="background: radial-gradient(circle, #2a9e93 0%, transparent 70%); top: 15%; right: 30%;"></div>
+    </div>
+
+    <!-- Horizon glow lines -->
+    <div class="horizon-glow" style="top: 18%;"></div>
+    <div class="horizon-glow" style="top: 52%; opacity: 0.7;"></div>
+    <div class="horizon-glow" style="top: 82%; opacity: 0.5;"></div>
+
+    <!-- Constellation geometry (left) -->
+    <svg class="constellation" style="top: 12%; left: 5%; animation: floatSlow 20s ease-in-out infinite;" width="200" height="200" viewBox="0 0 200 200">
+      <line x1="20" y1="30" x2="80" y2="70"/><line x1="80" y1="70" x2="60" y2="140"/>
+      <line x1="80" y1="70" x2="150" y2="50"/><line x1="150" y1="50" x2="180" y2="120"/>
+      <line x1="60" y1="140" x2="130" y2="170"/>
+      <circle cx="20" cy="30" r="2"/><circle cx="80" cy="70" r="2.5"/><circle cx="60" cy="140" r="1.5"/>
+      <circle cx="150" cy="50" r="2"/><circle cx="180" cy="120" r="1.5"/><circle cx="130" cy="170" r="2"/>
+    </svg>
+
+    <!-- Constellation geometry (right) -->
+    <svg class="constellation" style="top: 45%; right: 3%; animation: float 25s ease-in-out infinite 5s;" width="180" height="180" viewBox="0 0 180 180">
+      <line x1="30" y1="20" x2="90" y2="60"/><line x1="90" y1="60" x2="70" y2="130"/>
+      <line x1="90" y1="60" x2="160" y2="40"/><line x1="70" y1="130" x2="140" y2="150"/>
+      <line x1="160" y1="40" x2="140" y2="150"/>
+      <circle cx="30" cy="20" r="1.5"/><circle cx="90" cy="60" r="2.5"/><circle cx="70" cy="130" r="2"/>
+      <circle cx="160" cy="40" r="1.5"/><circle cx="140" cy="150" r="2"/>
+    </svg>
+
+    <!-- Constellation geometry (bottom-left) -->
+    <svg class="constellation" style="bottom: 15%; left: 15%; animation: floatSlow 22s ease-in-out infinite 8s;" width="150" height="120" viewBox="0 0 150 120">
+      <line x1="10" y1="50" x2="60" y2="20"/><line x1="60" y1="20" x2="120" y2="40"/>
+      <line x1="60" y1="20" x2="50" y2="90"/><line x1="120" y1="40" x2="140" y2="100"/>
+      <circle cx="10" cy="50" r="2"/><circle cx="60" cy="20" r="2"/><circle cx="120" cy="40" r="1.5"/>
+      <circle cx="50" cy="90" r="2"/><circle cx="140" cy="100" r="1.5"/>
+    </svg>
+
+    <!-- Floating particles -->
+    <div class="absolute w-1 h-1 rounded-full bg-tiffany-200/15" style="top: 8%; left: 20%; animation: float 7s ease-in-out infinite;"></div>
+    <div class="absolute w-1.5 h-1.5 rounded-full bg-tiffany-200/10" style="top: 30%; right: 12%; animation: floatSlow 9s ease-in-out infinite 2s;"></div>
+    <div class="absolute w-0.5 h-0.5 rounded-full bg-white/20" style="top: 50%; left: 8%; animation: float 5s ease-in-out infinite 1s;"></div>
+    <div class="absolute w-1 h-1 rounded-full bg-tiffany-200/12" style="top: 70%; right: 25%; animation: floatSlow 8s ease-in-out infinite 4s;"></div>
+    <div class="absolute w-0.5 h-0.5 rounded-full bg-white/15" style="top: 85%; left: 35%; animation: float 6s ease-in-out infinite 3s;"></div>
+    <div class="absolute w-1 h-1 rounded-full bg-tiffany-200/8" style="top: 15%; right: 40%; animation: floatSlow 11s ease-in-out infinite 6s;"></div>
+    <div class="absolute w-0.5 h-0.5 rounded-full bg-white/10" style="top: 42%; left: 55%; animation: float 8s ease-in-out infinite 2.5s;"></div>
+    <div class="absolute w-1 h-1 rounded-full bg-tiffany-200/10" style="top: 92%; right: 8%; animation: floatSlow 7s ease-in-out infinite 1.5s;"></div>
+
+    <!-- Vignette for depth -->
+    <div class="vignette"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav id="main-nav" class="fixed top-4 sm:top-6 z-50 animate-fade-in transition-all duration-500 max-w-[calc(100vw-1rem)]">
+    <div class="ios-glass rounded-full px-1.5 py-1.5 flex items-center gap-0.5 sm:gap-1 shadow-2xl">
+      <a href="#services" class="nav-link px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-300 whitespace-nowrap">Servicios</a>
+      <a href="#about" class="nav-link px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-300 whitespace-nowrap">About</a>
+      <a href="#cases" class="nav-link px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors duration-300 whitespace-nowrap">Casos</a>
+      <a href="#contact" class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-tiffany-200 text-black text-[11px] sm:text-xs font-medium hover:brightness-110 transition-opacity duration-300 shadow-[0_0_20px_-5px_rgba(129,216,208,0.5)] whitespace-nowrap">Contacto</a>
+    </div>
+  </nav>
+
+  <!-- ==================== HERO ==================== -->
+  <main class="w-full max-w-7xl px-4 md:px-8 z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-6 items-center min-h-screen pt-24 sm:pt-28 md:pt-20 pb-10">
+    <!-- Left Column -->
+    <div class="md:col-span-5 flex flex-col justify-center gap-6 md:gap-8 order-2 md:order-1">
+      <!-- Availability Badge -->
+      <div class="flex items-center gap-3 opacity-0 animate-fade-in animate-delay-100">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tiffany-200 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tiffany-200"></span>
+        </span>
+        <span class="text-xs font-medium tracking-wide text-tiffany-200 uppercase">Disponible para nuevos proyectos</span>
+      </div>
+
+      <!-- Heading with reveal -->
+      <div class="opacity-0 animate-fade-in animate-delay-200">
+        <h1 class="font-display text-[44px] xs:text-5xl sm:text-6xl md:text-[96px] leading-[0.95] md:leading-[0.9] tracking-tight text-white">
+          <div class="line-reveal"><span class="hero-line">José Ángel</span></div>
+          <div class="line-reveal"><span class="hero-line text-transparent bg-clip-text bg-gradient-to-r from-tiffany-200 via-tiffany-100 to-tiffany-300">Ulibarri</span></div>
+        </h1>
+        <p class="mt-5 md:mt-6 text-base sm:text-lg md:text-xl text-white/50 max-w-md font-light tracking-wide leading-relaxed">
+          Construyo agentes de IA, automatizaciones y sistemas conversacionales que generan resultados reales para clínicas y empresas.
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-6 opacity-0 animate-fade-in animate-delay-300">
+        <a href="#services" class="group flex items-center gap-2 bg-white text-black px-6 py-3.5 rounded-full font-medium text-sm hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
+          <span>Ver mis proyectos ↓</span>
+        </a>
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-white/40 hover:text-tiffany-200 transition-colors duration-300"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+          <a href="#" class="text-white/40 hover:text-tiffany-200 transition-colors duration-300"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Profile -->
+    <div class="md:col-span-3 flex items-center justify-center order-1 md:order-2 opacity-0 animate-fade-in animate-delay-200">
+      <div class="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[400px] mx-auto -my-4 md:-my-8" id="hero-image">
+        <img src="media/profile.jpeg" alt="José Ángel Ulibarri" class="w-full h-auto profile-fade animate-ghost scale-110 md:scale-125">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-tiffany-200 rounded-full filter blur-[100px] opacity-[0.1] -z-10"></div>
+      </div>
+    </div>
+
+    <!-- Right: Widgets (with 3D tilt container) -->
+    <div class="md:col-span-4 flex flex-col gap-4 order-3 opacity-0 animate-fade-in animate-delay-300" id="widgets-container">
+      <div class="relative w-full grid grid-cols-2 grid-rows-3 gap-4 tilt-card">
+        <!-- Profile Card -->
+        <div class="ios-glass rounded-[32px] p-6 col-span-2 flex items-center justify-between hover:bg-white/5 transition-colors duration-500 group tiffany-glow cursor-pointer gradient-border">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-tiffany-200 to-blue-600 p-[2px]">
+              <div class="w-full h-full rounded-full bg-black flex items-center justify-center overflow-hidden">
+                <span class="font-display text-2xl text-white">JA</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-white font-medium text-base tracking-tight">AI Automation Specialist</h3>
+              <p class="text-white/40 text-xs mt-0.5">Agentes · Automatización · IA aplicada</p>
+            </div>
+          </div>
+          <div class="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-tiffany-200 group-hover:text-black transition-colors duration-300 text-white/30">
+            <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="ios-glass rounded-[32px] p-5 flex flex-col justify-between group hover:bg-white/5 transition-colors duration-300 gradient-border">
+          <div class="p-2 rounded-xl bg-white/5 text-tiffany-200 w-fit"><i data-lucide="bot" class="w-5 h-5"></i></div>
+          <div>
+            <div class="text-2xl font-medium text-white tracking-tight counter" data-target="15">15+</div>
+            <div class="text-xs text-white/40 mt-1">Sistemas implementados</div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="ios-glass rounded-[32px] p-5 flex flex-col justify-between group hover:bg-white/5 transition-colors duration-300 gradient-border">
+          <div class="flex justify-between items-start w-full">
+            <div class="p-2 rounded-xl bg-white/5 text-tiffany-200"><i data-lucide="activity" class="w-5 h-5"></i></div>
+            <span class="relative flex h-3 w-3 mt-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
+            </span>
+          </div>
+          <div>
+            <div class="text-sm font-medium text-white tracking-tight mt-4">Disponible 24/7</div>
+            <div class="text-[10px] text-white/40 mt-1">Agentes activos</div>
+          </div>
+        </div>
+
+        <!-- Stack -->
+        <div class="ios-glass rounded-[32px] col-span-2 p-6 flex items-center justify-between relative overflow-hidden group gradient-border">
+          <div class="relative z-10">
+            <h4 class="text-white font-medium text-lg tracking-tight">Stack tecnológico</h4>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">n8n</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">WhatsApp</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">Retell AI</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">Airtable</span>
+              <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">Next.js</span>
+            </div>
+          </div>
+          <div class="absolute right-[-20px] bottom-[-40px] w-32 h-32 bg-gradient-to-br from-tiffany-200 to-transparent rounded-full opacity-20 blur-2xl group-hover:opacity-30 transition-opacity duration-500"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== ABOUT ==================== -->
+  <section id="about" class="w-full max-w-7xl px-4 md:px-8 py-16 md:py-24 z-10 border-t border-white/5">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start">
+      <!-- Photo -->
+      <div class="gsap-reveal">
+        <div class="rotating-border rounded-[32px]">
+          <div class="relative aspect-[4/5] rounded-[32px] overflow-hidden">
+            <img src="brand_assets/Gemini_Generated_Image_6x9ulx6x9ulx6x9u.png" alt="José Ángel Ulibarri" class="w-full h-full object-cover" id="about-image">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-6">
+              <h3 class="text-white font-display text-2xl tracking-tight">José Ángel Ulibarri</h3>
+              <p class="text-tiffany-200 text-sm font-medium mt-1">AI Automation Specialist</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text -->
+      <div class="flex flex-col gap-6">
+        <h2 class="font-display text-4xl md:text-6xl tracking-tight text-white italic gsap-reveal">About</h2>
+
+        <p class="text-white/50 text-base md:text-lg font-light tracking-wide leading-relaxed gsap-reveal">
+          Soy José Ángel Ulibarri, especialista en automatización con inteligencia artificial. Construyo sistemas que realmente funcionan: desde agentes de WhatsApp que atienden clientes a las 3am, hasta pipelines que eliminan horas de trabajo manual cada semana.
+        </p>
+        <p class="text-white/50 text-base md:text-lg font-light tracking-wide leading-relaxed gsap-reveal">
+          También soy profesor universitario y doctorante con enfoque en gobierno digital e IA. Eso me da algo poco común en este mundo: profundidad técnica con capacidad de explicarlo de forma clara y aplicada.
+        </p>
+        <p class="text-white/50 text-base md:text-lg font-light tracking-wide leading-relaxed gsap-reveal">
+          Mi misión es simple — que los negocios aprovechen la IA de verdad. No como buzzword, sino como herramienta que genera dinero, ahorra tiempo y mejora la experiencia de sus clientes.
+        </p>
+
+        <div class="flex flex-wrap gap-2 mt-4 gsap-reveal">
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">n8n</span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">WhatsApp Business API</span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">Retell AI</span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">Airtable</span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">React/Next.js</span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">Automatización</span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium text-white/60 hover:text-tiffany-200 transition-colors duration-300">Agentes de Voz</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SERVICIOS ==================== -->
+  <section id="services" class="w-full max-w-7xl px-4 md:px-8 py-16 md:py-24 z-10 border-t border-white/5">
+    <div class="mb-14 gsap-reveal">
+      <span class="text-xs font-medium tracking-[0.2em] text-tiffany-200 uppercase">Servicios</span>
+      <h2 class="font-display text-4xl md:text-6xl tracking-tight text-white mt-3 mb-3">¿Qué puedo hacer por ti?</h2>
+      <p class="text-white/50 text-base md:text-lg font-light tracking-wide max-w-lg">Sistemas de IA construidos a medida — no templates genéricos.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Card 1: WhatsApp Agent -->
+      <div class="ios-glass p-7 rounded-[32px] group flex flex-col service-card tilt-card gradient-border">
+        <div class="spotlight"></div>
+        <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 group-hover:scale-110 transition-transform duration-300 mb-5 icon-glow">
+          <i data-lucide="bot" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-medium text-white tracking-tight mb-2">Agente de WhatsApp</h3>
+        <p class="text-white/50 text-sm leading-relaxed font-light mb-4">Recepcionista virtual que atiende, califica y agenda automáticamente por WhatsApp, los 365 días del año.</p>
+        <div class="flex flex-wrap gap-1.5 mb-5">
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">WhatsApp API</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">ManyChat</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">n8n</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Claude AI</span>
+        </div>
+        <div class="mt-auto flex flex-col gap-2.5 pt-4 border-t border-white/5 chat-demo">
+          <div class="flex justify-end chat-msg" data-delay="0"><div class="bg-tiffany-200/15 border border-tiffany-200/20 rounded-2xl rounded-br-sm px-3.5 py-2 max-w-[85%]"><p class="text-xs text-white/70 leading-relaxed">Hola, quiero agendar una cita para mañana</p></div></div>
+          <div class="flex justify-start chat-msg" data-delay="800"><div class="bg-white/5 border border-white/10 rounded-2xl rounded-bl-sm px-3.5 py-2 max-w-[85%]"><div class="typing-dots"><span></span><span></span><span></span></div><p class="text-xs text-white/70 leading-relaxed chat-text" style="display:none">Tenemos disponibilidad a las 3pm y 5pm. ¿Cuál te funciona?</p></div></div>
+        </div>
+      </div>
+
+      <!-- Card 2: Voice Agent -->
+      <div class="ios-glass p-7 rounded-[32px] group flex flex-col service-card tilt-card gradient-border">
+        <div class="spotlight"></div>
+        <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 group-hover:scale-110 transition-transform duration-300 mb-5 icon-glow">
+          <i data-lucide="mic" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-medium text-white tracking-tight mb-2">Agente de Voz IA</h3>
+        <p class="text-white/50 text-sm leading-relaxed font-light mb-4">Contesta llamadas, resuelve dudas y transfiere al humano solo cuando es necesario.</p>
+        <div class="flex flex-wrap gap-1.5 mb-5">
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Retell AI</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">ElevenLabs</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">n8n</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Airtable</span>
+        </div>
+        <ul class="mt-auto flex flex-col gap-2 pt-4 border-t border-white/5">
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Atiende llamadas 24/7 en español natural</li>
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Agenda, cancela y reagenda citas</li>
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Transfiere con contexto completo</li>
+        </ul>
+      </div>
+
+      <!-- Card 3: Process Automation -->
+      <div class="ios-glass p-7 rounded-[32px] group flex flex-col service-card tilt-card gradient-border">
+        <div class="spotlight"></div>
+        <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 group-hover:scale-110 transition-transform duration-300 mb-5 icon-glow">
+          <i data-lucide="settings" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-medium text-white tracking-tight mb-2">Automatización de Procesos</h3>
+        <p class="text-white/50 text-sm leading-relaxed font-light mb-4">Elimino las tareas repetitivas de tu operación: seguimientos, reportes, sincronización de datos y notificaciones.</p>
+        <div class="flex flex-wrap gap-1.5 mb-5">
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">n8n</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Make</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Airtable</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Zapier</span>
+        </div>
+        <ul class="mt-auto flex flex-col gap-2 pt-4 border-t border-white/5">
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> CRM automático desde WhatsApp</li>
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Reportes semanales sin intervención</li>
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Seguimiento automático de leads</li>
+        </ul>
+      </div>
+
+      <!-- Card 4: Web + AI -->
+      <div class="ios-glass p-7 rounded-[32px] group flex flex-col service-card tilt-card gradient-border">
+        <div class="spotlight"></div>
+        <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 group-hover:scale-110 transition-transform duration-300 mb-5 icon-glow">
+          <i data-lucide="globe" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-medium text-white tracking-tight mb-2">Sitio Web + IA integrada</h3>
+        <p class="text-white/50 text-sm leading-relaxed font-light mb-4">Diseño y desarrollo tu presencia digital con chat IA integrado, formularios inteligentes y conexión a tus sistemas.</p>
+        <div class="flex flex-wrap gap-1.5 mb-5">
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Next.js</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">React</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Tailwind</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Lovable</span>
+        </div>
+        <ul class="mt-auto flex flex-col gap-2 pt-4 border-t border-white/5">
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Chat IA integrado en tu web</li>
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Diseño profesional y responsivo</li>
+          <li class="flex items-start gap-2 text-xs text-white/60 check-item"><span class="text-tiffany-200 mt-0.5">✓</span> Conectado a tu CRM y WhatsApp</li>
+        </ul>
+      </div>
+
+      <!-- Card 5: Instagram DM -->
+      <div class="ios-glass p-7 rounded-[32px] group flex flex-col service-card tilt-card gradient-border">
+        <div class="spotlight"></div>
+        <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 group-hover:scale-110 transition-transform duration-300 mb-5 icon-glow">
+          <i data-lucide="instagram" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-medium text-white tracking-tight mb-2">Agente de Instagram DM</h3>
+        <p class="text-white/50 text-sm leading-relaxed font-light mb-4">Responde mensajes directos automáticamente, califica leads y los mueve a tu funnel de ventas sin intervención humana.</p>
+        <div class="flex flex-wrap gap-1.5 mb-5">
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">ManyChat</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Meta API</span>
+          <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">n8n</span>
+        </div>
+        <div class="mt-auto flex flex-col gap-2.5 pt-4 border-t border-white/5 chat-demo">
+          <div class="flex justify-end chat-msg" data-delay="0"><div class="bg-tiffany-200/15 border border-tiffany-200/20 rounded-2xl rounded-br-sm px-3.5 py-2 max-w-[85%]"><p class="text-xs text-white/70 leading-relaxed">¿Cuánto cobran por el servicio?</p></div></div>
+          <div class="flex justify-start chat-msg" data-delay="800"><div class="bg-white/5 border border-white/10 rounded-2xl rounded-bl-sm px-3.5 py-2 max-w-[85%]"><div class="typing-dots"><span></span><span></span><span></span></div><p class="text-xs text-white/70 leading-relaxed chat-text" style="display:none">Con gusto te informo. ¿Me cuentas qué es lo que buscas?</p></div></div>
+        </div>
+      </div>
+
+      <!-- Card 6 — Featured: Suite IA para Clínicas -->
+      <div class="ios-glass p-7 rounded-[32px] group flex flex-col service-card tilt-card lg:col-span-2 md:col-span-2 relative overflow-hidden tiffany-glow gradient-border">
+        <div class="spotlight"></div>
+        <div class="shimmer-line"></div>
+        <div class="absolute right-[-40px] top-[-40px] w-48 h-48 bg-gradient-to-br from-tiffany-200 to-transparent rounded-full opacity-[0.08] blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col h-full">
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-12 h-12 rounded-2xl bg-tiffany-200/10 border border-tiffany-200/20 flex items-center justify-center text-tiffany-200 group-hover:scale-110 transition-transform duration-300 icon-glow">
+              <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+            </div>
+            <span class="px-3 py-1 rounded-full bg-tiffany-200/10 border border-tiffany-200/20 text-[10px] font-medium text-tiffany-200 tracking-wider uppercase" style="animation: ghostPulse 3s ease-in-out infinite;">Más popular</span>
+          </div>
+          <h3 class="text-xl font-medium text-white tracking-tight mb-2">Suite IA para Clínicas</h3>
+          <p class="text-white/50 text-sm leading-relaxed font-light mb-5">Paquete completo: agente WhatsApp + agente de voz + CRM en Airtable + recordatorios automáticos. Todo conectado, todo funcionando desde el día uno.</p>
+          <div class="flex flex-wrap gap-1.5 mb-5">
+            <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">WhatsApp</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Retell AI</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">Airtable</span>
+            <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-medium text-white/50">n8n</span>
+          </div>
+          <div class="mt-auto grid grid-cols-2 gap-4 pt-5 border-t border-white/5">
+            <div class="flex flex-col items-center py-3 rounded-2xl bg-white/[0.03] counter-box">
+              <span class="text-2xl font-medium text-tiffany-200 tracking-tight counter counter-glow" data-target="-80">-80%</span>
+              <span class="text-[11px] text-white/40 mt-1">llamadas sin respuesta</span>
+            </div>
+            <div class="flex flex-col items-center py-3 rounded-2xl bg-white/[0.03] counter-box">
+              <span class="text-2xl font-medium text-tiffany-200 tracking-tight counter counter-glow" data-target="40">+40%</span>
+              <span class="text-[11px] text-white/40 mt-1">confirmación de citas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CASOS DE ÉXITO ==================== -->
+  <section id="cases" class="w-full max-w-7xl px-4 md:px-8 py-16 md:py-24 z-10 border-t border-white/5">
+    <div class="mb-14 gsap-reveal">
+      <span class="text-xs font-medium tracking-[0.2em] text-tiffany-200 uppercase">Casos de Éxito</span>
+      <h2 class="font-display text-4xl md:text-6xl tracking-tight text-white mt-3 mb-3">Proyectos reales, resultados medibles.</h2>
+      <p class="text-white/50 text-base md:text-lg font-light tracking-wide max-w-lg">Cada proyecto es diferente. Estos son algunos de los sistemas que he construido.</p>
+    </div>
+
+    <div class="flex flex-col gap-8">
+
+      <!-- ====== CASO 1: Maysoon — HERO FULL WIDTH ====== -->
+      <div class="group rounded-[32px] overflow-hidden relative case-card gradient-border">
+        <div class="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[21/9] overflow-hidden case-gradient-1 case-grid-lines">
+          <div class="absolute top-[15%] right-[10%] w-32 h-32 border border-tiffany-200/10 rounded-full" style="animation: float 8s ease-in-out infinite;"></div>
+          <div class="absolute top-[20%] right-[12%] w-20 h-20 border border-tiffany-200/5 rounded-full" style="animation: floatSlow 6s ease-in-out infinite 1s;"></div>
+          <div class="absolute top-[30%] left-[60%] w-2 h-2 bg-tiffany-200/20 rounded-full" style="animation: float 4s ease-in-out infinite 0.5s;"></div>
+          <div class="absolute top-[50%] left-[75%] w-1.5 h-1.5 bg-tiffany-200/15 rounded-full" style="animation: floatSlow 5s ease-in-out infinite 2s;"></div>
+          <!-- WhatsApp + Phone + Instagram icons decorative -->
+          <div class="absolute top-1/2 right-[12%] -translate-y-1/2 flex gap-8 opacity-[0.04]">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#81D8D0" stroke-width="0.8"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Zm0 0a5 5 0 0 0 5 5m0 0a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1h1Z"/></svg>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#81D8D0" stroke-width="0.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#81D8D0" stroke-width="0.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-8 md:p-12">
+            <div class="flex flex-wrap gap-1.5 mb-3 sm:mb-4">
+              <span class="px-2.5 py-1 rounded-md bg-tiffany-200/10 backdrop-blur-sm border border-tiffany-200/20 text-[10px] font-medium text-tiffany-200">Clínica Estética</span>
+              <span class="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/10 text-[10px] font-medium text-white/80">WhatsApp AI</span>
+              <span class="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/10 text-[10px] font-medium text-white/80">Instagram DMs</span>
+              <span class="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/10 text-[10px] font-medium text-white/80">Agente de Voz</span>
+              <span class="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/10 text-[10px] font-medium text-white/80">Valencia</span>
+            </div>
+            <h3 class="font-display text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-2 leading-tight">Sistema IA Completo — Clínica Maysoon</h3>
+            <p class="text-white/60 text-xs sm:text-sm md:text-base font-light max-w-3xl mb-4 sm:mb-6 leading-relaxed">Suite completa de automatización: agente WhatsApp que agenda, reprograma, cancela citas, consulta disponibilidad, informa sobre servicios y contacta al personal. Instagram DMs automatizados (comentarios, historias). Agente de voz para llamadas. Sistema de recordatorios integrado.</p>
+            <div class="flex flex-wrap items-center gap-2 sm:gap-4">
+              <div class="ios-glass rounded-xl px-3 sm:px-5 py-2 sm:py-3 flex flex-col items-center">
+                <span class="text-base sm:text-xl font-medium text-tiffany-200">24/7</span>
+                <span class="text-[10px] text-white/50 mt-0.5">disponible</span>
+              </div>
+              <div class="ios-glass rounded-xl px-3 sm:px-5 py-2 sm:py-3 flex flex-col items-center">
+                <span class="text-base sm:text-xl font-medium text-tiffany-200">3</span>
+                <span class="text-[10px] text-white/50 mt-0.5">canales</span>
+              </div>
+              <div class="ios-glass rounded-xl px-3 sm:px-5 py-2 sm:py-3 flex flex-col items-center">
+                <span class="text-base sm:text-xl font-medium text-tiffany-200">0</span>
+                <span class="text-[10px] text-white/50 mt-0.5">llamadas perdidas</span>
+              </div>
+              <a href="#demo-maysoon" class="demo-btn sm:ml-2">Ver demo <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== CASOS 2 + 3: Side by side ====== -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- CASO 2: Clínica CEID -->
+        <div class="group rounded-[32px] overflow-hidden relative case-card gradient-border">
+          <div class="relative aspect-[4/3] overflow-hidden case-gradient-2 case-grid-lines">
+            <div class="absolute top-[20%] right-[15%] w-24 h-24 border border-purple-400/10 rounded-full" style="animation: floatSlow 7s ease-in-out infinite;"></div>
+            <div class="absolute top-[40%] left-[20%] w-1.5 h-1.5 bg-purple-400/15 rounded-full" style="animation: float 5s ease-in-out infinite 1s;"></div>
+            <!-- Email funnel decoration -->
+            <div class="absolute top-[25%] left-1/2 -translate-x-1/2 opacity-[0.06]">
+              <svg width="140" height="100" viewBox="0 0 140 100">
+                <rect x="20" y="10" width="100" height="30" rx="4" fill="none" stroke="#81D8D0" stroke-width="0.8"/>
+                <path d="M20 15 l50 20 l50 -20" fill="none" stroke="#81D8D0" stroke-width="0.8"/>
+                <line x1="70" y1="50" x2="70" y2="60" stroke="#81D8D0" stroke-width="0.8" stroke-dasharray="3 2"/>
+                <line x1="50" y1="60" x2="90" y2="60" stroke="#81D8D0" stroke-width="0.8"/>
+                <line x1="50" y1="60" x2="30" y2="80" stroke="#81D8D0" stroke-width="0.8"/>
+                <line x1="70" y1="60" x2="70" y2="85" stroke="#81D8D0" stroke-width="0.8"/>
+                <line x1="90" y1="60" x2="110" y2="80" stroke="#81D8D0" stroke-width="0.8"/>
+                <circle cx="30" cy="85" r="4" fill="#81D8D0" opacity="0.5"/><circle cx="70" cy="90" r="4" fill="#81D8D0" opacity="0.5"/><circle cx="110" cy="85" r="4" fill="#81D8D0" opacity="0.5"/>
+              </svg>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-7">
+              <div class="flex flex-wrap gap-1.5 mb-3">
+                <span class="px-2 py-0.5 rounded-md bg-purple-400/10 border border-purple-400/20 text-[10px] font-medium text-purple-300">Clínica Dental</span>
+                <span class="px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-[10px] font-medium text-white/80">Email Automation</span>
+                <span class="px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-[10px] font-medium text-white/80">CRM Airtable</span>
+              </div>
+              <h3 class="font-display text-2xl text-white tracking-tight mb-2">CRM + Email Sequences — Clínica CEID</h3>
+              <p class="text-white/50 text-sm font-light mb-4">Formularios web que captan leads directamente a un CRM completo en Airtable. Sistema de email automation con 5 capas de correos segmentados según el tipo de tratamiento del lead.</p>
+              <div class="flex flex-wrap items-center gap-3">
+                <div class="ios-glass rounded-lg px-4 py-2"><span class="text-sm font-medium text-tiffany-200">5 capas</span><span class="text-[9px] text-white/40 ml-1">de emails</span></div>
+                <div class="ios-glass rounded-lg px-4 py-2"><span class="text-sm font-medium text-tiffany-200">100%</span><span class="text-[9px] text-white/40 ml-1">automatizado</span></div>
+                <a href="#demo-ceid" class="demo-btn text-[11px]">Ver caso <i data-lucide="arrow-right" class="w-3 h-3"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CASO 3: Ayguajoc -->
+        <div class="group rounded-[32px] overflow-hidden relative case-card gradient-border">
+          <div class="relative aspect-[4/3] overflow-hidden case-gradient-3 case-grid-lines">
+            <div class="absolute top-[25%] left-[20%] w-20 h-20 border border-blue-400/10 rounded-lg rotate-12" style="animation: float 9s ease-in-out infinite;"></div>
+            <div class="absolute top-[45%] right-[25%] w-3 h-3 bg-blue-400/10 rounded-sm rotate-45" style="animation: floatSlow 6s ease-in-out infinite 1.5s;"></div>
+            <!-- Node/knowledge graph decoration -->
+            <div class="absolute top-[22%] left-1/2 -translate-x-1/2 opacity-[0.06]">
+              <svg width="160" height="100" viewBox="0 0 160 100">
+                <circle cx="80" cy="30" r="8" fill="none" stroke="#81D8D0" stroke-width="0.8"/>
+                <circle cx="30" cy="75" r="6" fill="none" stroke="#81D8D0" stroke-width="0.8"/>
+                <circle cx="80" cy="85" r="6" fill="none" stroke="#81D8D0" stroke-width="0.8"/>
+                <circle cx="130" cy="75" r="6" fill="none" stroke="#81D8D0" stroke-width="0.8"/>
+                <line x1="75" y1="37" x2="35" y2="70" stroke="#81D8D0" stroke-width="0.6"/>
+                <line x1="80" y1="38" x2="80" y2="79" stroke="#81D8D0" stroke-width="0.6"/>
+                <line x1="85" y1="37" x2="125" y2="70" stroke="#81D8D0" stroke-width="0.6"/>
+                <text x="80" y="33" text-anchor="middle" fill="#81D8D0" font-size="7" opacity="0.8">AI</text>
+              </svg>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-7">
+              <div class="flex flex-wrap gap-1.5 mb-3">
+                <span class="px-2 py-0.5 rounded-md bg-blue-400/10 border border-blue-400/20 text-[10px] font-medium text-blue-300">Centro Deportivo</span>
+                <span class="px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-[10px] font-medium text-white/80">Chatbot Web</span>
+                <span class="px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-[10px] font-medium text-white/80">Telegram</span>
+                <span class="px-2 py-0.5 rounded-md bg-white/10 border border-white/10 text-[10px] font-medium text-white/80">Agente de Voz</span>
+              </div>
+              <h3 class="font-display text-2xl text-white tracking-tight mb-2">Suite IA Interna — Ayguajoc</h3>
+              <p class="text-white/50 text-sm font-light mb-4">Chatbot web + agente de voz + agente Telegram interno para el personal. Base de conocimiento de procedimientos para onboarding y consulta diaria del equipo.</p>
+              <div class="flex flex-wrap items-center gap-3">
+                <div class="ios-glass rounded-lg px-4 py-2"><span class="text-sm font-medium text-tiffany-200">4</span><span class="text-[9px] text-white/40 ml-1">sistemas</span></div>
+                <div class="ios-glass rounded-lg px-4 py-2"><span class="text-sm font-medium text-tiffany-200">Onboarding</span><span class="text-[9px] text-white/40 ml-1">auto</span></div>
+                <a href="#demo-ayguajoc" class="demo-btn text-[11px]">Ver caso <i data-lucide="arrow-right" class="w-3 h-3"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== CASO 4: American Dream Visa — FULL WIDTH ====== -->
+      <div class="group rounded-[32px] overflow-hidden relative case-card gradient-border">
+        <div class="relative aspect-[4/5] sm:aspect-[16/10] md:aspect-[21/9] overflow-hidden case-gradient-4 case-grid-lines">
+          <div class="absolute top-[10%] left-[8%] w-40 h-28 border border-orange-400/8 rounded-2xl" style="animation: floatSlow 10s ease-in-out infinite;"></div>
+          <div class="absolute top-[35%] right-[20%] w-2 h-2 bg-orange-400/15 rounded-full" style="animation: float 4s ease-in-out infinite 2s;"></div>
+          <!-- Globe decoration -->
+          <div class="absolute top-1/2 right-[12%] -translate-y-1/2 opacity-[0.04]">
+            <svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="0.5">
+              <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-8 md:p-12">
+            <div class="flex flex-wrap gap-1.5 mb-3 sm:mb-4">
+              <span class="px-2.5 py-1 rounded-md bg-orange-400/10 border border-orange-400/20 text-[10px] font-medium text-orange-300">Visas Inversionistas</span>
+              <span class="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/10 text-[10px] font-medium text-white/80">WhatsApp AI</span>
+              <span class="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/10 text-[10px] font-medium text-white/80">Instagram</span>
+              <span class="px-2.5 py-1 rounded-md bg-white/10 backdrop-blur-sm border border-white/10 text-[10px] font-medium text-white/80">Lead Capture</span>
+            </div>
+            <h3 class="font-display text-2xl sm:text-3xl md:text-4xl text-white tracking-tight mb-2 leading-tight">Agentes IA — American Dream Visa</h3>
+            <p class="text-white/60 text-xs sm:text-sm md:text-base font-light max-w-2xl mb-4 sm:mb-6 leading-relaxed">Agentes de WhatsApp e Instagram que responden dudas de leads provenientes de anuncios y agendan llamadas de consultoría en automático. Calificación y seguimiento de prospectos sin intervención humana.</p>
+            <div class="flex flex-wrap items-center gap-2 sm:gap-4">
+              <div class="ios-glass rounded-xl px-3 sm:px-5 py-2 sm:py-3 flex flex-col items-center">
+                <span class="text-base sm:text-xl font-medium text-tiffany-200">&lt;2min</span>
+                <span class="text-[10px] text-white/50 mt-0.5">respuesta</span>
+              </div>
+              <div class="ios-glass rounded-xl px-3 sm:px-5 py-2 sm:py-3 flex flex-col items-center">
+                <span class="text-base sm:text-xl font-medium text-tiffany-200">24/7</span>
+                <span class="text-[10px] text-white/50 mt-0.5">activo</span>
+              </div>
+              <a href="#demo-adv" class="demo-btn sm:ml-2">Ver demo <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== CASO 5: Sitios Web ====== -->
+      <div class="mt-4">
+        <div class="flex items-center gap-4 mb-6 gsap-reveal">
+          <h3 class="font-display text-2xl md:text-3xl text-white tracking-tight italic">Sitios Web</h3>
+          <div class="flex-1 h-[1px] bg-gradient-to-r from-white/10 to-transparent"></div>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <!-- Web 1 -->
+          <a href="https://clinicamaysoon.vercel.app/" target="_blank" rel="noopener" class="group rounded-[24px] overflow-hidden relative web-card gradient-border block">
+            <div class="relative aspect-[3/2] overflow-hidden case-gradient-5 case-grid-lines">
+              <!-- Browser mockup -->
+              <div class="absolute top-[15%] left-1/2 -translate-x-1/2 w-[75%] opacity-[0.12] border border-white/20 rounded-lg overflow-hidden">
+                <div class="h-4 bg-white/10 flex items-center gap-1 px-1.5"><div class="w-1.5 h-1.5 rounded-full bg-white/30"></div><div class="w-1.5 h-1.5 rounded-full bg-white/20"></div><div class="w-1.5 h-1.5 rounded-full bg-white/10"></div></div>
+                <div class="p-2 flex flex-col gap-1.5"><div class="h-1.5 bg-white/10 rounded w-3/4"></div><div class="h-1.5 bg-white/10 rounded w-1/2"></div><div class="h-4 bg-tiffany-200/10 rounded w-full mt-1"></div></div>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+                <span class="px-2 py-0.5 rounded-md bg-tiffany-200/10 border border-tiffany-200/20 text-[9px] font-medium text-tiffany-200 mb-2 inline-block">Clínica Estética</span>
+                <h4 class="text-sm font-medium text-white tracking-tight">Clínica Maysoon</h4>
+                <span class="text-[10px] text-tiffany-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1 inline-flex items-center gap-1">Ver sitio <i data-lucide="external-link" class="w-3 h-3"></i></span>
+              </div>
+            </div>
+          </a>
+          <!-- Web 2 -->
+          <a href="https://creaitor-web.vercel.app/" target="_blank" rel="noopener" class="group rounded-[24px] overflow-hidden relative web-card gradient-border block">
+            <div class="relative aspect-[3/2] overflow-hidden case-gradient-5 case-grid-lines">
+              <div class="absolute top-[15%] left-1/2 -translate-x-1/2 w-[75%] opacity-[0.12] border border-white/20 rounded-lg overflow-hidden">
+                <div class="h-4 bg-white/10 flex items-center gap-1 px-1.5"><div class="w-1.5 h-1.5 rounded-full bg-white/30"></div><div class="w-1.5 h-1.5 rounded-full bg-white/20"></div><div class="w-1.5 h-1.5 rounded-full bg-white/10"></div></div>
+                <div class="p-2 flex flex-col gap-1.5"><div class="h-1.5 bg-white/10 rounded w-2/3"></div><div class="h-1.5 bg-white/10 rounded w-1/3"></div><div class="h-4 bg-tiffany-200/10 rounded w-full mt-1"></div></div>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+                <span class="px-2 py-0.5 rounded-md bg-tiffany-200/10 border border-tiffany-200/20 text-[9px] font-medium text-tiffany-200 mb-2 inline-block">Agencia Creativa</span>
+                <h4 class="text-sm font-medium text-white tracking-tight">Creaitor</h4>
+                <span class="text-[10px] text-tiffany-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1 inline-flex items-center gap-1">Ver sitio <i data-lucide="external-link" class="w-3 h-3"></i></span>
+              </div>
+            </div>
+          </a>
+          <!-- Web 3 -->
+          <a href="https://iagregconsulting.com/" target="_blank" rel="noopener" class="group rounded-[24px] overflow-hidden relative web-card gradient-border block">
+            <div class="relative aspect-[3/2] overflow-hidden case-gradient-5 case-grid-lines">
+              <div class="absolute top-[15%] left-1/2 -translate-x-1/2 w-[75%] opacity-[0.12] border border-white/20 rounded-lg overflow-hidden">
+                <div class="h-4 bg-white/10 flex items-center gap-1 px-1.5"><div class="w-1.5 h-1.5 rounded-full bg-white/30"></div><div class="w-1.5 h-1.5 rounded-full bg-white/20"></div><div class="w-1.5 h-1.5 rounded-full bg-white/10"></div></div>
+                <div class="p-2 flex flex-col gap-1.5"><div class="h-1.5 bg-white/10 rounded w-4/5"></div><div class="h-1.5 bg-white/10 rounded w-2/5"></div><div class="h-4 bg-tiffany-200/10 rounded w-full mt-1"></div></div>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+                <span class="px-2 py-0.5 rounded-md bg-tiffany-200/10 border border-tiffany-200/20 text-[9px] font-medium text-tiffany-200 mb-2 inline-block">Consultoría</span>
+                <h4 class="text-sm font-medium text-white tracking-tight">IA Greg Consulting</h4>
+                <span class="text-[10px] text-tiffany-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1 inline-flex items-center gap-1">Ver sitio <i data-lucide="external-link" class="w-3 h-3"></i></span>
+              </div>
+            </div>
+          </a>
+          <!-- Web 4 -->
+          <a href="https://criminologiaglobal.com/" target="_blank" rel="noopener" class="group rounded-[24px] overflow-hidden relative web-card gradient-border block">
+            <div class="relative aspect-[3/2] overflow-hidden case-gradient-5 case-grid-lines">
+              <div class="absolute top-[15%] left-1/2 -translate-x-1/2 w-[75%] opacity-[0.12] border border-white/20 rounded-lg overflow-hidden">
+                <div class="h-4 bg-white/10 flex items-center gap-1 px-1.5"><div class="w-1.5 h-1.5 rounded-full bg-white/30"></div><div class="w-1.5 h-1.5 rounded-full bg-white/20"></div><div class="w-1.5 h-1.5 rounded-full bg-white/10"></div></div>
+                <div class="p-2 flex flex-col gap-1.5"><div class="h-1.5 bg-white/10 rounded w-3/5"></div><div class="h-1.5 bg-white/10 rounded w-1/2"></div><div class="h-4 bg-tiffany-200/10 rounded w-full mt-1"></div></div>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-4 md:p-5">
+                <span class="px-2 py-0.5 rounded-md bg-tiffany-200/10 border border-tiffany-200/20 text-[9px] font-medium text-tiffany-200 mb-2 inline-block">Educación</span>
+                <h4 class="text-sm font-medium text-white tracking-tight">Criminología Global</h4>
+                <span class="text-[10px] text-tiffany-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-1 inline-flex items-center gap-1">Ver sitio <i data-lucide="external-link" class="w-3 h-3"></i></span>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== CONTACTO ==================== -->
+  <section id="contact" class="w-full max-w-7xl px-4 md:px-8 py-16 md:py-24 z-10 border-t border-white/5 relative">
+    <!-- Breathing glow -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-tiffany-200 rounded-full filter blur-[200px] opacity-[0.04] pointer-events-none" style="animation: ghostPulse 6s ease-in-out infinite;"></div>
+
+    <div class="mb-14 gsap-reveal relative z-10">
+      <span class="text-xs font-medium tracking-[0.2em] text-tiffany-200 uppercase">Contacto</span>
+      <h2 class="font-display text-4xl md:text-6xl tracking-tight text-white mt-3 mb-3">¿Listo para automatizar?</h2>
+      <p class="text-white/50 text-base md:text-lg font-light tracking-wide max-w-lg">Cuéntame de tu negocio y exploramos juntos qué sistema de IA tiene más sentido para ti. Sin compromisos, sin rollo técnico innecesario.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 relative z-10">
+      <!-- Contact Links -->
+      <div class="flex flex-col gap-4">
+        <a href="https://wa.me/TU_NUMERO" target="_blank" class="ios-glass rounded-[24px] p-5 flex items-center justify-between tilt-card gradient-border group gsap-reveal">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 transition-colors duration-300"><i data-lucide="message-circle" class="w-5 h-5"></i></div>
+            <div><h4 class="text-white font-medium text-sm tracking-tight">WhatsApp directo</h4><p class="text-white/40 text-xs mt-0.5">Respondo en menos de 2 horas</p></div>
+          </div>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-tiffany-200 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300"></i>
+        </a>
+        <a href="mailto:TU_EMAIL" class="ios-glass rounded-[24px] p-5 flex items-center justify-between tilt-card gradient-border group gsap-reveal">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 transition-colors duration-300"><i data-lucide="mail" class="w-5 h-5"></i></div>
+            <div><h4 class="text-white font-medium text-sm tracking-tight">Email</h4><p class="text-white/40 text-xs mt-0.5">Para proyectos formales</p></div>
+          </div>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-tiffany-200 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300"></i>
+        </a>
+        <a href="https://linkedin.com/in/TU_USUARIO" target="_blank" class="ios-glass rounded-[24px] p-5 flex items-center justify-between tilt-card gradient-border group gsap-reveal">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-white/60 group-hover:text-tiffany-200 transition-colors duration-300"><i data-lucide="linkedin" class="w-5 h-5"></i></div>
+            <div><h4 class="text-white font-medium text-sm tracking-tight">LinkedIn</h4><p class="text-white/40 text-xs mt-0.5">Conectemos profesionalmente</p></div>
+          </div>
+          <i data-lucide="arrow-right" class="w-4 h-4 text-tiffany-200 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300"></i>
+        </a>
+        <div class="flex items-center gap-3 mt-4 gsap-reveal">
+          <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tiffany-200 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tiffany-200"></span></span>
+          <span class="text-xs font-medium text-white/50">Actualmente tomando nuevos proyectos</span>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="gsap-reveal">
+        <form action="#" method="POST" class="ios-glass rounded-[32px] p-7 md:p-8 flex flex-col gap-5">
+          <div class="mb-2">
+            <h3 class="text-lg font-medium text-white tracking-tight">Cuéntame de tu proyecto</h3>
+            <p class="text-white/40 text-xs mt-1">Te respondo en menos de 24 horas.</p>
+          </div>
+          <div class="float-label">
+            <input type="text" name="name" required placeholder=" " class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-light focus:outline-none focus:border-tiffany-200/50 focus:shadow-[0_0_20px_-10px_rgba(129,216,208,0.3)] transition-all duration-300">
+            <label>¿Cómo te llamas?</label>
+          </div>
+          <div class="float-label">
+            <input type="text" name="business" required placeholder=" " class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-light focus:outline-none focus:border-tiffany-200/50 focus:shadow-[0_0_20px_-10px_rgba(129,216,208,0.3)] transition-all duration-300">
+            <label>¿Qué tipo de negocio tienes?</label>
+          </div>
+          <div class="float-label">
+            <textarea name="message" rows="4" required placeholder=" " class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white font-light focus:outline-none focus:border-tiffany-200/50 focus:shadow-[0_0_20px_-10px_rgba(129,216,208,0.3)] transition-all duration-300 resize-none"></textarea>
+            <label>Cuéntame el problema que quieres resolver con IA...</label>
+          </div>
+          <button type="submit" class="ripple-container w-full bg-tiffany-200 text-black font-medium text-sm py-3.5 rounded-full hover:brightness-110 hover:scale-[1.01] active:scale-[0.99] transition-transform duration-200 shadow-[0_0_20px_-5px_rgba(129,216,208,0.5)] flex items-center justify-center gap-2">
+            Enviar mensaje <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="w-full max-w-7xl px-4 md:px-8 z-10">
+    <div class="gradient-line w-full gsap-line"></div>
+    <div class="py-16 flex flex-col items-center text-center gap-4">
+      <h3 class="font-display text-3xl text-white tracking-tight gsap-reveal">José Ángel Ulibarri</h3>
+      <p class="text-sm text-white/40 font-light gsap-reveal">AI Automation Specialist · alquimIA</p>
+      <p class="text-xs text-white/20 mt-2 gsap-reveal">&copy; 2025 · Construido con IA, para el mundo real.</p>
+      <div class="flex gap-6 mt-4 gsap-reveal">
+        <a href="https://linkedin.com/in/TU_USUARIO" target="_blank" class="text-xs text-white/40 hover:text-tiffany-200 transition-colors duration-300">LinkedIn</a>
+        <a href="https://wa.me/TU_NUMERO" target="_blank" class="text-xs text-white/40 hover:text-tiffany-200 transition-colors duration-300">WhatsApp</a>
+        <a href="mailto:TU_EMAIL" class="text-xs text-white/40 hover:text-tiffany-200 transition-colors duration-300">Email</a>
+      </div>
+      <!-- Back to top -->
+      <a href="#" class="mt-6 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-tiffany-200 hover:border-tiffany-200/30 transition-colors duration-300">
+        <i data-lucide="chevron-up" class="w-4 h-4"></i>
+      </a>
+    </div>
+  </footer>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script>
+    // Init Lucide
+    lucide.createIcons();
+
+    // Wait for GSAP
+    window.addEventListener('load', () => {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // === SCROLL PROGRESS BAR ===
+      gsap.to('#scroll-progress', {
+        width: '100%',
+        ease: 'none',
+        scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 0.3 }
+      });
+
+      // === BACKGROUND MESH DRIFT ===
+      document.querySelectorAll('#bg-mesh > div').forEach((blob, i) => {
+        gsap.to(blob, {
+          x: `random(-100, 100)`, y: `random(-80, 80)`,
+          duration: `random(18, 30)`, repeat: -1, yoyo: true, ease: 'sine.inOut',
+          delay: i * 2.5
+        });
+      });
+
+      // === AURORA PARALLAX ON SCROLL ===
+      gsap.utils.toArray('.aurora-ribbon').forEach((ribbon, i) => {
+        gsap.to(ribbon, {
+          y: (i % 2 === 0 ? -120 : 80),
+          ease: 'none',
+          scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 1.5 }
+        });
+      });
+
+      // === HORIZON GLOW PARALLAX ===
+      gsap.utils.toArray('.horizon-glow').forEach((line, i) => {
+        gsap.to(line, {
+          y: -40 * (i + 1),
+          opacity: 0.3,
+          ease: 'none',
+          scrollTrigger: { trigger: 'body', start: 'top top', end: 'bottom bottom', scrub: 2 }
+        });
+      });
+
+      // === HERO TEXT REVEAL ===
+      gsap.from('.hero-line', {
+        y: '110%', duration: 1.2, stagger: 0.2, ease: 'power4.out', delay: 0.3
+      });
+
+      // === HERO IMAGE PARALLAX ===
+      gsap.to('#hero-image', {
+        y: 80, ease: 'none',
+        scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom top', scrub: true }
+      });
+
+      // === WIDGET PARALLAX ===
+      gsap.to('#widgets-container', {
+        y: 50, ease: 'none',
+        scrollTrigger: { trigger: 'main', start: 'top top', end: 'bottom top', scrub: true }
+      });
+
+      // === GSAP SCROLL REVEALS ===
+      gsap.utils.toArray('.gsap-reveal').forEach((el, i) => {
+        gsap.from(el, {
+          y: 40, opacity: 0, duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+        });
+      });
+
+      // === ABOUT IMAGE PARALLAX ===
+      gsap.to('#about-image', {
+        y: -40, ease: 'none',
+        scrollTrigger: { trigger: '#about', start: 'top bottom', end: 'bottom top', scrub: true }
+      });
+
+      // === SERVICE CARDS BATCH ===
+      gsap.set('.service-card', { y: 40, opacity: 0, scale: 0.97 });
+      ScrollTrigger.batch('.service-card', {
+        onEnter: (batch) => gsap.to(batch, { y: 0, opacity: 1, scale: 1, stagger: 0.1, duration: 0.7, ease: 'power3.out', overwrite: true }),
+        start: 'top 90%'
+      });
+
+      // === SERVICE CARD SPOTLIGHT (mouse-following radial light) ===
+      document.querySelectorAll('.service-card').forEach(card => {
+        const spotlight = card.querySelector('.spotlight');
+        if (!spotlight) return;
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          spotlight.style.left = (e.clientX - rect.left) + 'px';
+          spotlight.style.top = (e.clientY - rect.top) + 'px';
+        });
+      });
+
+      // === CHAT TYPING ANIMATION (dots → text reveal on scroll) ===
+      document.querySelectorAll('.chat-demo').forEach(demo => {
+        ScrollTrigger.create({
+          trigger: demo,
+          start: 'top 85%',
+          once: true,
+          onEnter: () => {
+            const msgs = demo.querySelectorAll('.chat-msg');
+            msgs.forEach((msg, i) => {
+              const delay = parseInt(msg.dataset.delay) || 0;
+              setTimeout(() => {
+                gsap.from(msg, { opacity: 0, y: 12, duration: 0.5, ease: 'power2.out' });
+                const dots = msg.querySelector('.typing-dots');
+                const text = msg.querySelector('.chat-text');
+                if (dots && text) {
+                  setTimeout(() => {
+                    dots.style.display = 'none';
+                    text.style.display = 'block';
+                    gsap.from(text, { opacity: 0, duration: 0.3 });
+                  }, 1200);
+                }
+              }, delay + i * 400);
+            });
+          }
+        });
+      });
+
+      // === CHECKLIST STAGGER ON SCROLL ===
+      document.querySelectorAll('.service-card').forEach(card => {
+        const items = card.querySelectorAll('.check-item');
+        if (!items.length) return;
+        ScrollTrigger.create({
+          trigger: card,
+          start: 'top 80%',
+          once: true,
+          onEnter: () => {
+            items.forEach((item, i) => {
+              setTimeout(() => item.classList.add('visible'), 200 + i * 150);
+            });
+          }
+        });
+      });
+
+      // === COUNTER COUNT-UP ON SCROLL ===
+      document.querySelectorAll('.counter').forEach(counter => {
+        const target = parseInt(counter.dataset.target);
+        if (isNaN(target)) return;
+        const originalText = counter.textContent.trim();
+        const prefix = originalText.match(/^[^\d-]*/)[0] || '';
+        const suffix = originalText.match(/[^\d]*$/)[0] || '';
+        const obj = { val: 0 };
+        ScrollTrigger.create({
+          trigger: counter,
+          start: 'top 90%',
+          once: true,
+          onEnter: () => {
+            gsap.to(obj, {
+              val: target, duration: 1.5, ease: 'power2.out',
+              onUpdate: () => { counter.textContent = prefix + Math.round(obj.val) + suffix; }
+            });
+          }
+        });
+      });
+
+      // === CASE CARDS ===
+      gsap.set('.case-card', { opacity: 0, y: 40 });
+      gsap.utils.toArray('.case-card').forEach((card, i) => {
+        const dir = (i === 0 || i === 3) ? (i % 2 === 0 ? -50 : 50) : 0;
+        gsap.to(card, {
+          x: 0, y: 0, opacity: 1, duration: 0.9, ease: 'power3.out',
+          scrollTrigger: { trigger: card, start: 'top 90%' }
+        });
+        if (dir !== 0) gsap.set(card, { x: dir });
+      });
+
+      // === WEB CARDS BATCH ===
+      gsap.set('.web-card', { y: 30, opacity: 0, scale: 0.97 });
+      ScrollTrigger.batch('.web-card', {
+        onEnter: (batch) => gsap.to(batch, { y: 0, opacity: 1, scale: 1, stagger: 0.08, duration: 0.6, ease: 'power3.out', overwrite: true }),
+        start: 'top 92%'
+      });
+
+      // === FOOTER GRADIENT LINE ===
+      ScrollTrigger.create({
+        trigger: '.gsap-line',
+        start: 'top 95%',
+        onEnter: () => gsap.to('.gsap-line', { scaleX: 1, duration: 1.2, ease: 'power3.out' })
+      });
+
+      // === NAV SHRINK ON SCROLL ===
+      ScrollTrigger.create({
+        start: 100,
+        onEnter: () => document.getElementById('main-nav').classList.add('scale-95', 'opacity-90'),
+        onLeaveBack: () => document.getElementById('main-nav').classList.remove('scale-95', 'opacity-90')
+      });
+    });
+
+    // === 3D TILT EFFECT ===
+    if (window.matchMedia('(hover: hover)').matches) {
+      document.querySelectorAll('.tilt-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          card.style.transform = `perspective(800px) rotateX(${-y * 8}deg) rotateY(${x * 8}deg)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(800px) rotateX(0) rotateY(0)';
+        });
+      });
+    }
+
+    // === RIPPLE EFFECT ===
+    document.querySelectorAll('.ripple-container').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const ripple = document.createElement('div');
+        ripple.classList.add('ripple');
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+    });
+  </script>
+</body>
+</html>
